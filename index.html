@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <title>vueshop</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1706037_6wmo03uuw4c.css">
+
+    <!--swiper链接-->
+    <!--<link rel="stylesheet" href="dist/css/swiper.min.css">-->
+    <!--<script src="dist/js/swiper.min.js"></script>-->
+
+    <script>
+      let htmlwidth = document.documentElement.clientWidth || document.body.clientWidth ;
+      let htmlDom = document.getElementsByTagName('html')[0];
+      if(htmlwidth>750){htmlwidth=750}
+      htmlDom.style.fontSize= htmlwidth/20 +'px';
+    </script>
+  </body>
+</html>
