@@ -1,5 +1,5 @@
 <template>
-  <div class="goods-info" @click="gotoGoodsPage" style="margin: 10px 10px 0 0">
+  <div class="goods-info" @click="gotoGoodsPage" style="margin: 10px 10px 0 0;background-color: #fff">
     <div class="goods-image">
       <img v-lazy="goodsImage" width="80%" height="80px" />
     </div>

@@ -79,9 +79,53 @@ router.post('/getCategorySubList',async(ctx)=>{
 
 
 
+//添加一级分类
+router.post('/firstCategoryAdd',async ctx=>{
+  //一级分类的名称
+  const {MALL_CATEGORY_NAME,ID} =ctx.request.body
+
+  let newCategory = new categoryModel({MALL_CATEGORY_NAME,ID})
+  await newCategory.save().then(
+    res=>{
+      ctx.body={code:0,message:"添加成功"}
+
+    }
+  )
+})
+//删除一级分类
+router.post('/firstCategoryDel',async ctx=>{
+  const {MALL_CATEGORY_NAME} =ctx.request.body
+
+  await categoryModel.remove({MALL_CATEGORY_NAME}).then(res=>{
+    ctx.body={code:0,message:"删除成功"}
+  })
+})
 
 
 
+//添加二级分类
+router.post('/secondCategoryAdd',async ctx=>{
+  //一级分类的名称
+  const {MALL_CATEGORY_ID,MALL_SUB_NAME,ID} =ctx.request.body
+
+
+  let newCategorySub = new categorySubModel({MALL_CATEGORY_ID,MALL_SUB_NAME,ID})
+  await newCategorySub.save().then(
+    res=>{
+      ctx.body={code:0,message:"添加成功"}
+    }
+  )
+
+})
+
+//删除二级分类
+router.post('/secondCategoryDel',async ctx=>{
+  const {ID} =ctx.request.body
+
+  await categorySubModel.remove({ID}).then(res=>{
+    ctx.body={code:0,message:"删除成功"}
+  })
+})
 
 
 module.exports=router;

@@ -5,8 +5,8 @@ let router=new Router()
 //引入userSchema
 const userModel=require("../database/schema/user").userModel
 
-router.get("/",async (ctx)=>{
-  ctx.body="用户首页"
+router.post("/",async (ctx)=>{
+  ctx.body={code:0,message:"测试接口而已"}
 })
 //注册路由
 router.post('/register',async(ctx)=>{
@@ -17,7 +17,7 @@ router.post('/register',async(ctx)=>{
      if(result){
        ctx.body={ code:500, message:'用户已注册'}
      }else{
-      await new userModel({userName:newUser.username,password:newUser.password,payPassword:newUser.payPassword}).save().then(
+      await new userModel({userName:newUser.username,password:newUser.password,payPassword:newUser.payPassword,isLogin:true}).save().then(
          (res)=>{
           // ctx.cookies.set('userid',res._id,{maxAge:1000*60*24*1})//设置cookieID
 
@@ -31,6 +31,20 @@ router.post('/register',async(ctx)=>{
      }
    })
 })
+//注销登录路由
+router.post("/cancellogin",async ctx=>{
+  const userid=ctx.request.body.userid
+  console.log(userid)
+  await userModel.findByIdAndUpdate({_id:userid},{isLogin:false}).then(
+    ()=>{
+      ctx.body={code:200,message:"已注销登录"}
+    }
+  )
+
+
+  // ctx.body={code:200,message:"你好"}
+})
+
 //登录路由
 router.post("/login",async (ctx)=>{
   //取出登录对象
@@ -41,12 +55,22 @@ router.post("/login",async (ctx)=>{
 
     await userModel.findOne({userName})
     .then(async(result)=>{
+      //判断用户是否已经登陆
+      if(result.isLogin){
+        ctx.body={code:201,message:"账号已登录"}
+        return
+      }
+
     if(result){
       //console.log(User)
       //当用户名存在时，开始比对密码
       let newUser = new userModel()  //因为是实例方法，所以要new出对象，才能调用
       await newUser.comparePassword(password,result.password)
-        .then( (isMatch)=>{
+        .then(  async (isMatch)=>{
+          //比对成功修改登录状态
+          if(isMatch){
+            await userModel.findByIdAndUpdate({_id:result._id},{isLogin:true},()=>{})
+          }
           //返回比对结果
           let data={
             userid:result._id,
@@ -64,8 +88,7 @@ router.post("/login",async (ctx)=>{
         })
         .catch(error=>{
           //出现异常，返回异常
-
-          ctx.body={ code:500, message:error}
+          ctx.body={ code:500, message:"异常"}
         })
     }else{
       ctx.body={ code:200, message:'用户名不存在或密码错误'}
@@ -76,6 +99,16 @@ router.post("/login",async (ctx)=>{
     ctx.body={ code:500, message:error  }
   })
 })
+
+//通过缓存登录，修改登录状态
+router.post("/loginfromlocal",async ctx=>{
+  let {userName}=ctx.request.body
+  await userModel.update({userName},{isLogin:true}).then(()=>{
+    ctx.body={code:200,message:"已登录"}
+  })
+})
+
+
 //完善用户信息路由
 router.post("/saveuserinfo",async ctx=>{
    let user=ctx.request.body
@@ -110,82 +143,82 @@ router.post("/saveuserinfo",async ctx=>{
 /*
  生成指定长度的随机数
  */
-const Base64 = require('js-base64').Base64;
-const md5 = require('blueimp-md5')
-const moment = require('moment')
-const request = require('request');
+// const Base64 = require('js-base64').Base64;
+// const md5 = require('blueimp-md5')
+// const moment = require('moment')
+// const request = require('request');
 
 
-const axios=require("axios")
-
-
-function randomCode(length) {
-  let chars = ['0','1','2','3','4','5','6','7','8','9'];
-  let result = ""; //统一改名: alt + shift + R
-  for(let i = 0; i < length ; i ++) {
-    var index = Math.ceil(Math.random()*9);
-    result += chars[index];
-  }
-
-  return result;
-}
-
-router.get("/sendcode",async ctx=>{
-  //获取请求参数
-  let phone="15627188132"
-  let code=randomCode(6)
-
-
-  let ACCOUNT_SID = '8aaf070870e20ea10170f6f4ff4b0dd0';
-  let AUTH_TOKEN = '8d80643c4eab4d61a7239bd12e3926b8';
-  let Rest_URL = 'https://app.cloopen.com:8883';
-  let AppID = '8aaf070870e20ea10170f6f4ffb10dd6';
-  //1. 准备请求url
-  /*
-     1.使用MD5加密（账户Id + 账户授权令牌 + 时间戳）。其中账户Id和账户授权令牌根据url的验证级别对应主账户。
-     时间戳是当前系统时间，格式"yyyyMMddHHmmss"。时间戳有效时间为24小时，如：20140416142030
-     2.SigParameter参数需要大写，如不能写成sig=abcdefg而应该写成sig=ABCDEFG
-     */
-  let sigParameter = '';
-  let time = moment().format('YYYYMMDDHHmmss');
-  sigParameter = md5(ACCOUNT_SID+AUTH_TOKEN+time);
-  let url = Rest_URL+'/2013-12-26/Accounts/'+ACCOUNT_SID+'/SMS/TemplateSMS?sig='+sigParameter;
-
-  //2. 准备请求体
-  let body = {
-    to : phone,
-    appId : AppID,
-    templateId : '1',
-    "datas":[code,"1"]
-  }
-
-  //3. 准备请求头
-  /*
-   1.使用Base64编码（账户Id + 冒号 + 时间戳）其中账户Id根据url的验证级别对应主账户
-   2.冒号为英文冒号
-   3.时间戳是当前系统时间，格式"yyyyMMddHHmmss"，需与SigParameter中时间戳相同。
-   */
-  var authorization = ACCOUNT_SID + ':' + time;
-  authorization = Base64.encode(authorization);
-  var headers = {
-    'Accept' :'application/json',
-    'Content-Type' :'application/json;charset=utf-8',
-    'Content-Length': JSON.stringify(body).length+'',
-    'Authorization' : authorization
-  }
-  //4. 发送请求, 并得到返回的结果
-  let result=await request(
-    {
-      method : 'POST',
-      url : url,
-      headers : headers,
-      body : body,
-      json : true
-    }
-  )
-
-
-})
+// const axios=require("axios")
+//
+//
+// function randomCode(length) {
+//   let chars = ['0','1','2','3','4','5','6','7','8','9'];
+//   let result = ""; //统一改名: alt + shift + R
+//   for(let i = 0; i < length ; i ++) {
+//     var index = Math.ceil(Math.random()*9);
+//     result += chars[index];
+//   }
+//
+//   return result;
+// }
+//
+// router.get("/sendcode",async ctx=>{
+//   //获取请求参数
+//   let phone="15627188132"
+//   let code=randomCode(6)
+//
+//
+//   let ACCOUNT_SID = '8aaf070870e20ea10170f6f4ff4b0dd0';
+//   let AUTH_TOKEN = '8d80643c4eab4d61a7239bd12e3926b8';
+//   let Rest_URL = 'https://app.cloopen.com:8883';
+//   let AppID = '8aaf070870e20ea10170f6f4ffb10dd6';
+//   //1. 准备请求url
+//   /*
+//      1.使用MD5加密（账户Id + 账户授权令牌 + 时间戳）。其中账户Id和账户授权令牌根据url的验证级别对应主账户。
+//      时间戳是当前系统时间，格式"yyyyMMddHHmmss"。时间戳有效时间为24小时，如：20140416142030
+//      2.SigParameter参数需要大写，如不能写成sig=abcdefg而应该写成sig=ABCDEFG
+//      */
+//   let sigParameter = '';
+//   let time = moment().format('YYYYMMDDHHmmss');
+//   sigParameter = md5(ACCOUNT_SID+AUTH_TOKEN+time);
+//   let url = Rest_URL+'/2013-12-26/Accounts/'+ACCOUNT_SID+'/SMS/TemplateSMS?sig='+sigParameter;
+//
+//   //2. 准备请求体
+//   let body = {
+//     to : phone,
+//     appId : AppID,
+//     templateId : '1',
+//     "datas":[code,"1"]
+//   }
+//
+//   //3. 准备请求头
+//   /*
+//    1.使用Base64编码（账户Id + 冒号 + 时间戳）其中账户Id根据url的验证级别对应主账户
+//    2.冒号为英文冒号
+//    3.时间戳是当前系统时间，格式"yyyyMMddHHmmss"，需与SigParameter中时间戳相同。
+//    */
+//   var authorization = ACCOUNT_SID + ':' + time;
+//   authorization = Base64.encode(authorization);
+//   var headers = {
+//     'Accept' :'application/json',
+//     'Content-Type' :'application/json;charset=utf-8',
+//     'Content-Length': JSON.stringify(body).length+'',
+//     'Authorization' : authorization
+//   }
+//   //4. 发送请求, 并得到返回的结果
+//   let result=await request(
+//     {
+//       method : 'POST',
+//       url : url,
+//       headers : headers,
+//       body : body,
+//       json : true
+//     }
+//   )
+//
+//
+// })
 
 
 

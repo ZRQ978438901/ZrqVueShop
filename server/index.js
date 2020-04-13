@@ -55,23 +55,9 @@ app.use(async (ctx)=>{
 
 })
 
-// var server = require('http').Server(app);
-// const io = require('socket.io')(server);
-// // 监视客户端与服务器的连接
-// io.on('connection',function(socket) {
-//   //接收数据
-//   socket.on('login', function (obj) {
-//     console.log("用户", obj.username);
-//     // 发送数据
-//     socket.emit('relogin', {
-//       msg: `你好${obj.username}`,
-//       code: 200
-//     });
-//   });
-// });
 
 var server = require('http').Server(app);
-require('./socketIO/test')(server)
+require('./socketIO/index')(server)
 
 server.listen(4000)
 

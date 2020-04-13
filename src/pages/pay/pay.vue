@@ -98,7 +98,7 @@
           this.$store.commit('getOrderDetail',result.data.data)
 
           setTimeout(()=>{
-            this.$router.push('confirmPay')
+            this.$router.replace('confirmPay')
           },1500)
         }
 

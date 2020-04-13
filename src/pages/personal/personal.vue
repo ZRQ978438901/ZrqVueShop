@@ -42,7 +42,7 @@
     <div class="personal-detail">
       <div class="personal-detail-money">
         <div style=" color: darkorange;">
-         {{user.money}}
+         {{isLogin?user.money:0}}
         </div>
         <div>
           我的余额
@@ -53,7 +53,7 @@
 
       <div class="personal-detail-discounts" @click="showDialog">
           <div style="color: firebrick">
-           {{coupons}}
+           {{isLogin?coupons:0}}
           </div>
           <div>
             我的优惠
@@ -65,7 +65,7 @@
 
       <div class="personal-detail-integral">
           <div style="color: darkcyan">
-            {{user.integral}}
+            {{isLogin?user.integral:0}}
           </div>
           <div>
             积分
@@ -89,8 +89,8 @@
         </div>
       </div>
 
-      <div class="myOrder">
-        <img src="./images/jifen.png"  height="50px" />
+      <div class="myOrder" @click="test">
+        <img src="./images/jifen.png"  height="50px"  />
         <div >积分商城</div>
         <div > > </div>
       </div>
@@ -103,10 +103,14 @@
 
       <div style="border-bottom: 3px solid white"></div>
 
-      <div class="myOrder">
+      <div class="myOrder" @click="gotoChatList">
         <img src="./images/fuwuzhongxin.png"  height="50px" />
-        <div >服务中心</div>
-        <div > > </div>
+        <div >聊天列表</div>
+
+        <div >
+          <van-tag round type="danger" v-show="this.$store.getters.showAllRead"  >新消息</van-tag>
+          >
+        </div>
       </div>
     </div>
 
@@ -115,6 +119,10 @@
 
 <script>
   import {mapState} from "vuex"
+  import {mapActions} from "vuex"
+  import axios from "axios"
+  import url from "../../api/api.config"
+
   export default {
     data(){
       return{
@@ -129,31 +137,58 @@
       ...mapState(['isLogin','newOrder'])
     },
     mounted(){
+      if(!this.isLogin){
+        this.user={}
+      }
+
       if(localStorage.user){
         console.log(this.isLogin)
         this.user=JSON.parse(localStorage.user)
-        this.$store.commit("changeIsLogin",true)
+        console.log("user",this.user)
 
+        this.$store.commit("changeIsLogin",true)
         this.coupons=this.user.coupons.length
         this.couponsArr=this.user.coupons
 
-        console.log(this.couponsArr)
-        console.log(this.user)
+        {
+          axios({
+            method:'post',
+            url:url.loginFromLocal,
+            data:{userName:this.user.userName}
+          }).then((res)=>{
+
+          })
+        }
+
       }
 
     },
     methods:{
+      ...mapActions(['cancelLogin']),
+
+      test(){
+
+      },
+
+
+
       gotoLogin(){
         if(this.isLogin){
           this.$dialog.confirm({
               message: '确定退出登陆？',
             }).then(()=>{
-            console.log(this.isLogin)
+
+
 
             this.$store.commit("changeIsLogin",false)
 
-            localStorage.removeItem('cartInfo')//清空购物车
-            localStorage.removeItem("user")
+            this.cancelLogin(JSON.parse(localStorage.user).userid)
+
+
+            setTimeout(()=>{
+              localStorage.removeItem('cartInfo')//清空购物车
+              localStorage.removeItem("user")
+            },1500)
 
           }).catch(()=>{})
         }else {
@@ -172,6 +207,13 @@
       },
       showDialog(){
         this.show=!this.show
+      },
+      gotoChatList(){
+        if(!this.isLogin){
+          this.$toast.success("请先登录")
+          return
+        }
+        this.$router.push('/chatlist')
       }
     }
   }

@@ -39,6 +39,7 @@
 
                   <img :src="car.image" width="40px" height="40px">
                   <div style="overflow: hidden;text-align: center;font-size: 12px">{{car.Name}} </div>
+                  <div style="color: darkgreen">￥{{car.price}}</div>
                 </div>
               </swiper-slide>
               <div class="swiper-pagination" slot="pagination"></div>
@@ -103,13 +104,10 @@
           for( let item of cartInfo){
             allMoney+=item.price*item.count
           }
-          //解决刷新页面bug
+          //
           localStorage.cartInfo=JSON.stringify(cartInfo)
 
           this.$store.commit("getTotalMoney",allMoney)
-
-
-
 
 
         setTimeout(()=>{
@@ -123,9 +121,11 @@
       }
     },
     mounted(){
-      this.orderlistReverse=this.orderList.reverse()
+      if(this.orderList){
+        this.orderlistReverse=this.orderList.reverse()
+      }
 
-      // console.log("原本",this.orderList)
+       // console.log("原本",this.orderList[0].cartInfo)
       //
       // console.log("之后",this.orderlistReverse)
 
@@ -135,7 +135,7 @@
   }
 </script>
 
-<style >
+<style scoped>
   .my-swipe .van-swipe-item {
     color: #fff;
     font-size: 20px;

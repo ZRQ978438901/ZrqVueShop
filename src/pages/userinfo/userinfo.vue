@@ -2,7 +2,6 @@
   <div class="userinfo-wrap">
     <div class="info-nav">请完善用户信息</div>
 
-
     <div v-show="selectedHeader" class="selecetd-header">
       <span>已选择头像</span>
       <span><img :src="selectHeaderImage"></span>
@@ -38,6 +37,7 @@
   import axios from "axios"
   import url from "../../api/api.config"
   import {mapState} from "vuex"
+  import {mapActions} from "vuex"
   export default {
     created(){
       this.geiHeaderImage()
@@ -51,8 +51,6 @@
 
       //保存检查
       checkInfo(){
-
-
         if(this.selectedHeader&&this.nickname&&this.address&&this.type&&this.tel){
 
           return true
@@ -70,8 +68,14 @@
         type:"",
       }
     },
+    destroyed(){
+      //非正常退出
+      if(!localStorage.user){
+        this.cancelLogin(this.userid)
+      }
+    },
     methods:{
-
+      ...mapActions(['changeRead']),
 
       //获取头像图片
       geiHeaderImage(){

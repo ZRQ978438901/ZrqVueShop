@@ -10,5 +10,15 @@ export default {
   },
   showNewOrder(state){
     return state.newOrder
+  },
+
+  showMsgList(state){
+    return state.usersMsgs
+  },
+
+  showAllRead(state){
+    return state.allRead
   }
+
+
 }

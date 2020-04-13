@@ -4,6 +4,7 @@
             <keep-alive>
                 <router-view />
             </keep-alive>
+
         </div>
         <div>
           <van-tabbar v-model="active" @change="changeTabbar(active)">
@@ -19,6 +20,7 @@
 
 <script>
   import {mapState} from "vuex"
+  import {mapActions} from 'vuex'
   import axios from "axios"
   import  url from "../../api/api.config"
 
@@ -32,7 +34,7 @@
            }
        },
       computed:{
-      ...mapState(['isLogin'])
+      ...mapState(['isLogin','usersMsgs','cancelLogin'])
       },
        created(){
            this.changeTabBarActive()
@@ -48,22 +50,48 @@
 
             if(Date.now()-lastTime>=86400*1000){
               localStorage.removeItem("user")
+
+              this.cancelLogin(JSON.parse(localStorage.user).userid)
               this.$store.commit("changeIsLogin",false)
             }
-
             //获取订单列表
             this.userid=JSON.parse(localStorage.user).userid
+            //获取用户列表和聊天信息
+            this.getUsersMsgs(this.userid)
+
+
+            //判断是否存在未读消息
+            this.checkIsRead(this.userid)
+
 
             setTimeout(()=>{
               this.getOrderList()
-
-            },1000)
+            },100)
 
           }
-
-
       },
        methods: {
+         //获取用户列表和聊天信息
+         ...mapActions(['getUsersMsgs']),
+
+         //判断是否存在未读消息
+         checkIsRead(userid){
+          setTimeout(()=>{
+            let msgList=this.usersMsgs.chatListArr
+            if(msgList){
+              for(let item in msgList){
+                if(msgList[item].to===userid&&msgList[item].read===false){
+                  this.$store.commit('changeAllRead',true)
+                  return
+                }
+              }
+            }
+            this.$store.commit('changeAllRead',false)
+          },500)
+
+
+         },
+
            changeTabBarActive(){
                this.nowPath = this.$route.path
              if(this.nowPath==="/"){
@@ -91,7 +119,6 @@
                         this.$router.push({name:'Personal'})
                         break;
 
-
                }
            },
 
@@ -111,10 +138,14 @@
           }
 
          }
+
+
        },
+
     }
 </script>
 
 <style >
 
 </style>
+

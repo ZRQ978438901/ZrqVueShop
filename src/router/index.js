@@ -14,7 +14,8 @@ import Coupon from "../pages/coupon/coupon"
 import Pay from "../pages/pay/pay"
 import ConfirmPay from "../pages/confirmPay/confirmPay"
 import Order from "../pages/order/order"
-
+import ChatList from "../pages/chatList/chatList"
+import Chat from "../pages/chat/chat"
 
 Vue.use(Router)
 
@@ -24,6 +25,16 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/chat',
+      name: 'Chat',
+      component: Chat
+    },
+    {
+      path: '/chatlist',
+      name: 'ChatList',
+      component: ChatList
     },
     {
       path: '/order',
@@ -61,11 +72,13 @@ export default new Router({
       component: Userinfo
     },
     {path: '/',name: 'Main',component: Main,
+
       children:[
         {path: '/',name: 'ShoppingMall',component: ShoppingMall},
         {path: '/categoryList',name: 'CategoryList',component: CategoryList},
         {path: '/cart',name: 'Cart',component: Cart},
         {path: '/personal',name: 'Personal',component: Personal},
+
       ]
     },
   ]

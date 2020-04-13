@@ -112,7 +112,7 @@
         }
       },
       onClickLeft(){
-        this.$router.go(-1)
+        this.$router.back()
       },
       hangdleCollect(){
         this.isCollected=!this.isCollected
@@ -125,7 +125,7 @@
       },
       //聊天页面
       chatToME(){
-
+        this.$router.push('/chatlist')
       },
       gotoCart(){
         this.addGoodsToCartShop()

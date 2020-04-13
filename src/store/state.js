@@ -18,6 +18,19 @@ export default {
 
   orderList:[],//订单数组
 
+
+
   newOrder:false,
+
+  usersMsgs:{},
+
+  isChatUpdate:false,
+
+
+  allRead:false,
+
+
+
+
 }
 

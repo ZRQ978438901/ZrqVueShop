@@ -39,6 +39,21 @@ export default {
 
   getnewOrder(state,newOrder){
     state.newOrder=newOrder
+  },
+
+  //获取用户列表
+  getUsersMsgsList(state,usersMsgs){
+    state.usersMsgs=usersMsgs
+  },
+
+
+
+
+
+  changeAllRead(state,bool){
+    state.allRead=bool
   }
+
+
 
 }

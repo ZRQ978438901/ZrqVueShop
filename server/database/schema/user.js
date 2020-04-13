@@ -18,11 +18,11 @@ const userSchema=new Schema({
   address:String,//收货地址
   tel:String,//收货手机
   type:String,//用户类型
-  money:{type:Number,default:100000},//余额
+  money:{type:Number,default:5000},//余额
   integral:{type:Number,default:100},//积分
   coupons:{type:Array,default:[{cuupon:1},{cuupon:2},{cuupon:3}]},
   payPassword:String,
-  isLogin:false,//是否登录
+  isLogin:Boolean,//是否登录
 },{
   collection:'user'
 })

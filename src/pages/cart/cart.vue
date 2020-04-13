@@ -103,8 +103,6 @@
           this.cartInfo=cartInfo
         }
 
-
-
       },
       handleAdd(index){
         if( this.cartInfo[index].count<100){
@@ -120,6 +118,8 @@
         if(this.cartInfo.length>0&&this.isLogin){
           this.$router.push("settleAccounts")
         }
+
+
       }
     },
 

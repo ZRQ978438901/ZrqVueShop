@@ -14,6 +14,8 @@ Vue.use(new VueSocketIO({
   debug: true,
   // 服务器端地址
   connection: 'http://localhost:4000',
+  // connection: "http://120.26.175.87:4000",
+
   vuex: {
   }
 }))
@@ -28,14 +30,14 @@ Vue.filter('dateformat', function(dataStr, pattern = 'YYYY-MM-DD HH:mm:ss') {
 })
 
 
-import { Picker ,Card ,PasswordInput, Tag ,NumberKeyboard,Button,Row,CountDown ,Col,Swipe,SwipeItem,Lazyload ,List,Field,NavBar,Toast,Tab,Tabs,PullRefresh,Tabbar, TabbarItem,Grid,GridItem,RadioGroup, Radio,Dialog,Switch,Popup,Cell  } from 'vant'
+import { Picker ,Notify ,Card ,PasswordInput, Tag ,NumberKeyboard,Button,Row,CountDown ,Col,Swipe,SwipeItem,Lazyload ,List,Field,NavBar,Toast,Tab,Tabs,PullRefresh,Tabbar, TabbarItem,Grid,GridItem,RadioGroup, Radio,Dialog,Switch,Popup,Cell  } from 'vant'
 
 
 
 
 
 Vue.use(Button).use(Row).use(Col).use(Swipe).use(SwipeItem).use(Lazyload ).use(List).use(Field).use(NavBar).use(Toast).use(Tab).use(Tabs).use(PullRefresh).use(Tabbar)
-  .use(TabbarItem).use(Dialog).use(Popup ).use(Tag )
+  .use(TabbarItem).use(Dialog).use(Popup ).use(Tag ).use(Notify )
 Vue.use(Grid).use(Switch).use(Cell).use(CountDown ).use(Picker ).use(Card )
 Vue.use(PasswordInput);
 Vue.use(NumberKeyboard);

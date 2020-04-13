@@ -43,7 +43,8 @@
         :error-message="PaypasswordErrorMsg"
       />
       <div class="register-button">
-        <van-button type="primary" size="large" @click="registerAction" :loading="openLoading">马上注册</van-button>
+        <van-button type="primary" size="large" @click="registerAction" :loading="openLoading"
+        >马上注册</van-button>
       </div>
     </div>
 

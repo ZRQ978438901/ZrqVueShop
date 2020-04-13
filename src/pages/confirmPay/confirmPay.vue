@@ -100,7 +100,7 @@
           localStorage.removeItem('cartInfo')//清空购物车
 
           setTimeout(()=>{
-            this.$router.push("/")
+            this.$router.replace("/personal")
 
           },1000)
         }else if(result.data.code===201){

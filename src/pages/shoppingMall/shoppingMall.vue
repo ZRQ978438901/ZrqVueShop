@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wrap-mall">
     <div class="search-bar">
       <van-row >
         <van-col span="3"class="locationIcon">
@@ -59,13 +59,14 @@
     <div class="hot-area" >
       <div class="hot-title" >热卖商品</div>
       <div class="hot-goods" style="margin-bottom: 50px">
-        <van-list>
-          <van-row gutter="20">
+        <van-list style="background-color: #fff;padding: 5px">
+          <van-row gutter="20" >
             <van-col span="12" v-for="( item, index) in hotGoods" :key="index">
               <goods-info :goodsImage="item.image" :goodsName="item.name"
                           :goodsId="item.goodsId"
                           :goodsPrice="item.price"></goods-info>
             </van-col>
+
           </van-row>
         </van-list>
       </div>
@@ -156,6 +157,11 @@ export default {
 </script>
 
 <style >
+  .wrap-mall{
+    width: 100%;
+    background-color: #fff;
+  }
+
   .search-bar{
     height: 2.2rem;
     background-color: #e5017d;
@@ -231,5 +237,6 @@ export default {
     font-size:14px;
     height: 1.8rem;
     line-height:1.8rem;
+
   }
 </style>

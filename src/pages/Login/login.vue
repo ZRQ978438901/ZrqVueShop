@@ -49,6 +49,8 @@
   import url from '../../api/api.config'
   import {mapState} from "vuex"
 
+  import verification from "../../util/verification"
+
   export default {
     data() {
       return {
@@ -74,13 +76,11 @@
       },
       ...mapState(['isLogin']),
     },
-    created(){
-      // if(localStorage.userInfo){
-      //   this.$toast.success("已登录")
-      //   this.$router.push("/")
-      // }
 
-      this.newLocalVerificationMsg="abcd"
+    created(){
+
+      this.newLocalVerificationMsg=verification(4)
+
     },
     methods: {
       goBack() {
@@ -91,7 +91,7 @@
       },
       //生成验证码
       newVerificationCode(){
-        this.newLocalVerificationMsg="1234"
+        this.newLocalVerificationMsg=verification(4)
       },
       handlePhoneLogin(){
         if(true){
@@ -123,7 +123,7 @@
         }
         return isOk
       },
-      //*******axios注册用户方法*******
+      //*******axios登录用户方法*******
       axioLoginUser(){
         //先把按钮进行loading状态，防止重复提交
         this.openLoading = true
@@ -137,16 +137,21 @@
            withCredentials: true
         })
            .then(response => {
+             if(response.data.code===201){
+               this.openLoading = false
+               this.$toast.fail(response.data.message)
+               this.newLocalVerificationMsg=verification(4)
+               return
+             }
+             console.log(response)
              //如果信息没有完善跳转到信息完善界面
             if(!response.data.data.address){
               this.$router.push("userinfo")
               return
             }
-
           if(response.status===200&&response.data.message===true) {
             localStorage.userInfo={userName:this.username}
           setTimeout(()=>{
-
             this.$toast.success("登录成功")
             this.$router.push("/")
             localStorage.removeItem("user")
@@ -155,18 +160,17 @@
             data.date=Date.now()
             localStorage.user= JSON.stringify( data)
             this.$store.commit("changeIsLogin",true)
-
-
           },500)
-
           }
           else{
               this.openLoading = false
+            this.newLocalVerificationMsg=verification(4)
               this.$toast.fail(response.data.message)
             }
           })
           .catch((error) => {
             this.openLoading = false
+            this.newLocalVerificationMsg=verification(4)
           })
       },
       //*****注册用户的实行方法*****
